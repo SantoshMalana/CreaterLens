@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { fetchFullVideoData } from '@/lib/youtube';
 import { embedAndStore } from '@/lib/embeddings';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
   try {
     const { urls } = await req.json();

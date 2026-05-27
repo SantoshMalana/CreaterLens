@@ -4,6 +4,8 @@ import { retrieveRelevantChunks } from '@/lib/embeddings';
 import { getHistory, addMessage } from '@/lib/memory';
 import { creatorLensPrompt } from '@/lib/rag';
 
+export const dynamic = 'force-dynamic';
+
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: NextRequest) {
