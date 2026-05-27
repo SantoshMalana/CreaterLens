@@ -8,22 +8,41 @@ interface Props {
   videos: VideoMetadata[];
 }
 
-const SUGGESTED_QUESTIONS = [
-  'Which video has a stronger hook?',
-  'Why did one video outperform the other?',
-  'What improvements can I make to my content?',
-  'Compare the opening 30 seconds of both videos',
-];
-
 export default function ChatWindow({ sessionId, videos }: Props) {
   const [messages, setMessages] = useState<ChatMessageType[]>([]);
   const [input, setInput] = useState('');
   const [streaming, setStreaming] = useState(false);
+  const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Fetch dynamic suggested questions when videos are loaded
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      try {
+        const res = await fetch('/api/suggest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ videoTitles: videos.map(v => v.title) }),
+        });
+        const data = await res.json();
+        if (data.questions && data.questions.length > 0) {
+          setSuggestedQuestions(data.questions);
+        }
+      } catch {
+        setSuggestedQuestions([
+          'Which video has a stronger hook?',
+          'Why did one video outperform the other?',
+          'What improvements can I make to my content?',
+          'Compare the opening 30 seconds of both videos',
+        ]);
+      }
+    };
+    if (videos.length === 2) fetchSuggestions();
+  }, [videos]);
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || streaming) return;
@@ -97,15 +116,21 @@ export default function ChatWindow({ sessionId, videos }: Props) {
       {/* Suggested questions */}
       {messages.length === 0 && (
         <div className="p-4 grid grid-cols-2 gap-2">
-          {SUGGESTED_QUESTIONS.map((q, i) => (
-            <button
-              key={i}
-              onClick={() => sendMessage(q)}
-              className="text-xs text-left px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-300 hover:border-blue-500 hover:text-white transition-all"
-            >
-              {q}
-            </button>
-          ))}
+          {suggestedQuestions.length > 0 ? (
+            suggestedQuestions.map((q, i) => (
+              <button
+                key={i}
+                onClick={() => sendMessage(q)}
+                className="text-xs text-left px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-300 hover:border-blue-500 hover:text-white transition-all"
+              >
+                {q}
+              </button>
+            ))
+          ) : (
+            <div className="col-span-2 text-center py-2">
+              <span className="text-xs text-gray-500 animate-pulse">Generating smart questions...</span>
+            </div>
+          )}
         </div>
       )}
 
