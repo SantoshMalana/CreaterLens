@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  serverExternalPackages: ['@xenova/transformers', 'chromadb', 'onnxruntime-node'],
+  serverExternalPackages: ['chromadb'],
   turbopack: {},
   webpack: (config: any) => {
     config.resolve.alias = {
