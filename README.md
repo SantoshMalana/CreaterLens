@@ -1,5 +1,10 @@
 # 🎬 CreatorLens
 
+![Next.js](https://img.shields.io/badge/Next.js-16-black)
+![Groq](https://img.shields.io/badge/Groq-LLaMA3.3-orange)
+![LangChain](https://img.shields.io/badge/LangChain-1.4-green)
+![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector_DB-blue)
+
 CreatorLens is a full-stack Retrieval-Augmented Generation (RAG) chatbot designed for YouTube video analysis. It allows content creators to compare the performance of two YouTube videos by analyzing their transcripts, engagement metrics, and structure. Creators can chat directly with an AI assistant to uncover actionable insights about why certain videos perform better, focusing on hooks, pacing, and audience retention.
 
 ## 🏗 Architecture Diagram
@@ -35,16 +40,17 @@ User UI (Streaming Chat + Citations)
 ## 🛠 Stack & Choices
 
 *   **Next.js (App Router)**: Provides a seamless full-stack developer experience, Server-Sent Events (SSE) for chat streaming, and easy deployment.
-*   **Groq API (LLaMA-3.3-70b)**: Chosen for its blazing-fast inference speeds, enabling real-time, low-latency streaming responses that feel instantaneous to the user.
+*   **Groq API (LLaMA-3.3-70b)**: Chosen over OpenAI — 10x faster token generation via LPU architecture. At 1,000 creators/day, latency directly impacts UX and cost.
+*   **LangChain (RecursiveCharacterTextSplitter + PromptTemplate)**: Handles intelligent text chunking with overlap and structured prompt management for the RAG pipeline.
 *   **ChromaDB**: An easy-to-use, open-source local vector database perfect for rapid prototyping and storing transcript chunk embeddings.
-*   **Transformers.js**: Allows running the embedding model (`Xenova/all-MiniLM-L6-v2`) locally within the Node.js environment, reducing external API costs and latency for embeddings.
+*   **Transformers.js**: Chosen over OpenAI embeddings — zero per-call cost, runs entirely in Node.js. At scale this saves hundreds of dollars/month.
 *   **Tailwind CSS**: For rapid, utility-first UI styling and dark mode aesthetics.
 
 ## 🚀 How to Run Locally
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/SantoshMalana/CreaterLens.git
+    git clone https://github.com/SantoshMalana/CreatorLens.git
     cd creatorlens
     ```
 
@@ -89,4 +95,7 @@ To scale CreatorLens for 1000+ creators per day:
 
 ## 📸 Screenshots
 
-*(Add screenshots or a GIF demonstrating the UI and chat functionality here)*
+<div align="center">
+  <img src="public/screenshots/videocards.png" alt="Video Metadata and Engagement Rates" width="45%" />
+  <img src="public/screenshots/chat.png" alt="AI Chat Interface with Citations" width="45%" />
+</div>
