@@ -7,12 +7,14 @@ import { VideoMetadata, AnalyzeResponse } from '@/types';
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
+  const [loadingSteps, setLoadingSteps] = useState<string[]>([]);
   const [videos, setVideos] = useState<VideoMetadata[]>([]);
   const [sessionId, setSessionId] = useState<string>('');
   const [error, setError] = useState<string>('');
 
   const handleAnalyze = async (urls: [string, string]) => {
     setLoading(true);
+    setLoadingSteps([]);
     setError('');
     setVideos([]);
     setSessionId('');
@@ -24,11 +26,33 @@ export default function Home() {
         body: JSON.stringify({ urls }),
       });
 
-      const data: AnalyzeResponse = await res.json();
-      if (!res.ok) throw new Error((data as any).error);
+      if (!res.body) throw new Error('No response body');
 
-      setVideos(data.videos);
-      setSessionId(data.sessionId);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let doneReading = false;
+
+      while (!doneReading) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        const lines = chunk.split('\n');
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = JSON.parse(line.slice(6));
+            if (data.error) throw new Error(data.error);
+            if (data.step) {
+              setLoadingSteps(prev => [...prev, data.step]);
+            }
+            if (data.done) {
+              setVideos(data.videos);
+              setSessionId(data.sessionId);
+              doneReading = true;
+            }
+          }
+        }
+      }
     } catch (err: any) {
       setError(err.message || 'Something went wrong');
     } finally {
@@ -52,10 +76,17 @@ export default function Home() {
 
         {/* Loading state */}
         {loading && (
-          <div className="max-w-4xl mx-auto mt-8 text-center">
-            <div className="inline-flex flex-col items-center gap-3">
-              <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-              <p className="text-gray-400 text-sm">Fetching transcripts, computing embeddings, building vector store...</p>
+          <div className="max-w-4xl mx-auto mt-8 text-left bg-gray-900 border border-gray-800 rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-gray-200 mb-4 flex items-center gap-2">
+              <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+              Processing Pipeline
+            </h3>
+            <div className="flex flex-col gap-2">
+              {loadingSteps.map((step, idx) => (
+                <div key={idx} className="text-gray-300 font-mono text-sm animate-pulse flex items-center gap-2">
+                  {step}
+                </div>
+              ))}
             </div>
           </div>
         )}
