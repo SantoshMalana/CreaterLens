@@ -13,7 +13,7 @@ export function extractVideoId(url: string): string | null {
   return null;
 }
 
-export async function fetchVideoMetadata(videoId: string): Promise<Omit<VideoMetadata, 'transcript' | 'engagementRate'>> {
+export async function fetchVideoMetadata(videoId: string): Promise<Omit<VideoMetadata, 'transcript' | 'engagementRate' | 'wordCount'>> {
   const apiKey = process.env.YOUTUBE_API_KEY;
   const response = await axios.get(
     `https://www.googleapis.com/youtube/v3/videos`,

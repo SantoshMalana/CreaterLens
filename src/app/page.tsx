@@ -45,8 +45,9 @@ export default function Home() {
 
         for (const line of parts) {
           if (line.startsWith('data: ')) {
+            let data: any = null;
             try {
-              const data = JSON.parse(line.slice(6));
+              data = JSON.parse(line.slice(6));
               if (data.error) throw new Error(data.error);
               if (data.step) {
                 setLoadingSteps(prev => [...prev, data.step]);
