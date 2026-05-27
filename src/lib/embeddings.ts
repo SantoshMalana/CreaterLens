@@ -1,4 +1,4 @@
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 import { ChromaClient } from 'chromadb';
 
 const client = new ChromaClient({ path: 'http://localhost:8000' });

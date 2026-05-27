@@ -1,9 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ['@xenova/transformers', 'chromadb'],
-  },
-  webpack: (config) => {
+  serverExternalPackages: ['@xenova/transformers', 'chromadb'],
+  webpack: (config: any) => {
     config.resolve.alias = {
       ...config.resolve.alias,
       sharp$: false,
