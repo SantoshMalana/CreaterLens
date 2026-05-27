@@ -64,6 +64,23 @@ export default function Home() {
     <main className="min-h-screen bg-gray-950 text-white">
       <div className="max-w-7xl mx-auto px-4 py-8">
 
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">CreatorLens</h1>
+          {videos.length === 2 && (
+            <button
+              onClick={() => {
+                setVideos([]);
+                setSessionId('');
+                setLoadingSteps([]);
+                setError('');
+              }}
+              className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-sm font-medium rounded-lg transition-colors border border-gray-700"
+            >
+              + New Analysis
+            </button>
+          )}
+        </div>
+
         {/* URL Input */}
         <UrlInput onAnalyze={handleAnalyze} loading={loading} />
 
