@@ -43,10 +43,22 @@ export default function VideoCard({ video, index }: Props) {
           <div className="text-gray-400">Comments</div>
           <div className="text-white font-bold">{formatNumber(video.comments)}</div>
         </div>
-        <div className="bg-green-900 rounded-lg p-2 text-center border border-green-700">
-          <div className="text-green-400">Engagement</div>
-          <div className="text-green-300 font-bold">{video.engagementRate}%</div>
+        <div className="col-span-2 bg-gray-900 rounded-lg p-3 border border-gray-700">
+          <div className="flex justify-between items-end mb-1">
+            <span className="text-gray-400">Engagement</span>
+            <span className="text-green-400 font-bold">{video.engagementRate}%</span>
+          </div>
+          <div className="w-full bg-gray-800 rounded-full h-2">
+            <div
+              className="bg-green-500 h-2 rounded-full"
+              style={{ width: `${Math.min((video.engagementRate / 10) * 100, 100)}%` }}
+            ></div>
+          </div>
         </div>
+      </div>
+      <div className="mt-1 text-xs text-gray-400 flex items-center gap-1">
+        <span>📝</span>
+        <span>{video.wordCount.toLocaleString()} words transcribed</span>
       </div>
     </div>
   );

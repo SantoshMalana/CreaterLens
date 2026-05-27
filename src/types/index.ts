@@ -11,6 +11,7 @@ export interface VideoMetadata {
   thumbnail: string;
   engagementRate: number;
   transcript: string;
+  wordCount: number;
 }
 
 export interface ChatMessage {

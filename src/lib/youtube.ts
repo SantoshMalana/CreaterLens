@@ -75,5 +75,7 @@ export async function fetchFullVideoData(url: string): Promise<VideoMetadata> {
     metadata.views
   );
 
-  return { ...metadata, transcript, engagementRate };
+  const wordCount = transcript.split(/\s+/).filter(Boolean).length;
+
+  return { ...metadata, transcript, engagementRate, wordCount };
 }
