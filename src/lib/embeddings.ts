@@ -1,5 +1,11 @@
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 
+// Force Transformers.js to use the WebAssembly (WASM) backend instead of native binary (onnxruntime-node)
+// This is critical for compatibility with Vercel Serverless Functions.
+if (typeof process !== 'undefined' && process.env) {
+  process.env.TRANSFORMERS_JS_NODE_TYPE = 'web';
+}
+
 // Lazy-init ChromaDB client — never runs at build time
 let _client: any = null;
 async function getChromaClient() {
