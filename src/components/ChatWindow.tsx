@@ -66,6 +66,16 @@ export default function ChatWindow({ sessionId, videos }: Props) {
         }),
       });
 
+      if (!response.ok) {
+        const errText = await response.text();
+        let errMsg = `HTTP error! status: ${response.status}`;
+        try {
+          const errJson = JSON.parse(errText);
+          errMsg = errJson.error || errMsg;
+        } catch {}
+        throw new Error(errMsg);
+      }
+
       const reader = response.body!.getReader();
       const decoder = new TextDecoder();
       let citations: Citation[] = [];
@@ -104,8 +114,16 @@ export default function ChatWindow({ sessionId, videos }: Props) {
           }
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Chat error:', error);
+      setMessages(prev => {
+        const updated = [...prev];
+        updated[updated.length - 1] = {
+          role: 'assistant',
+          content: `⚠️ Error: ${error.message || 'Unable to connect to chat assistant.'}`,
+        };
+        return updated;
+      });
     } finally {
       setStreaming(false);
     }

@@ -5,7 +5,8 @@ let _client: any = null;
 async function getChromaClient() {
   if (!_client) {
     const { ChromaClient } = await import('chromadb');
-    _client = new ChromaClient({ path: 'http://localhost:8000' });
+    const chromaUrl = process.env.CHROMA_URL || 'http://localhost:8000';
+    _client = new ChromaClient({ path: chromaUrl });
   }
   return _client;
 }

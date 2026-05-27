@@ -26,6 +26,16 @@ export default function Home() {
         body: JSON.stringify({ urls }),
       });
 
+      if (!res.ok) {
+        const errText = await res.text();
+        let errMsg = `HTTP error! status: ${res.status}`;
+        try {
+          const errJson = JSON.parse(errText);
+          errMsg = errJson.error || errMsg;
+        } catch {}
+        throw new Error(errMsg);
+      }
+
       if (!res.body) throw new Error('No response body');
 
       const reader = res.body.getReader();
