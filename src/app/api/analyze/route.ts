@@ -32,7 +32,9 @@ export async function POST(req: NextRequest) {
             )
           );
 
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, videos, sessionId })}\n\n`));
+          // Strip transcripts from the client payload — they're huge and already stored in ChromaDB
+          const clientVideos = videos.map(({ transcript, ...rest }) => rest);
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, videos: clientVideos, sessionId })}\n\n`));
           controller.close();
         } catch (err: any) {
           controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: err.message })}\n\n`));
