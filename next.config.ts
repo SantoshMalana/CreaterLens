@@ -1,7 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   serverExternalPackages: ['chromadb'],
-  turbopack: {},
+  turbopack: {
+    resolveAlias: {
+      'onnxruntime-node': './src/lib/empty.ts',
+      sharp: './src/lib/empty.ts',
+    },
+  },
   webpack: (config: any) => {
     config.resolve.alias = {
       ...config.resolve.alias,
