@@ -1,7 +1,14 @@
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
-import { ChromaClient } from 'chromadb';
 
-const client = new ChromaClient({ path: 'http://localhost:8000' });
+// Lazy-init ChromaDB client — never runs at build time
+let _client: any = null;
+async function getChromaClient() {
+  if (!_client) {
+    const { ChromaClient } = await import('chromadb');
+    _client = new ChromaClient({ path: 'http://localhost:8000' });
+  }
+  return _client;
+}
 
 export async function chunkText(text: string): Promise<string[]> {
   const splitter = new RecursiveCharacterTextSplitter({
@@ -21,6 +28,7 @@ export async function embedAndStore(
   const embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
 
   const chunks = await chunkText(transcript);
+  const client = await getChromaClient();
   const collection = await client.getOrCreateCollection({ name: sessionId });
 
   const embeddings: number[][] = [];
@@ -30,10 +38,10 @@ export async function embedAndStore(
   }
 
   await collection.add({
-    ids: chunks.map((_, i) => `${videoId}_chunk_${i}`),
+    ids: chunks.map((_: string, i: number) => `${videoId}_chunk_${i}`),
     embeddings,
     documents: chunks,
-    metadatas: chunks.map((_, i) => ({
+    metadatas: chunks.map((_: string, i: number) => ({
       videoId,
       videoTitle,
       chunkIndex: i,
@@ -52,13 +60,14 @@ export async function retrieveRelevantChunks(
   const output = await embedder(query, { pooling: 'mean', normalize: true });
   const queryEmbedding = Array.from(output.data) as number[];
 
+  const client = await getChromaClient();
   const collection = await client.getCollection({ name: sessionId });
   const results = await collection.query({
     queryEmbeddings: [queryEmbedding],
     nResults,
   });
 
-  return (results.documents[0] || []).map((doc, i) => ({
+  return (results.documents[0] || []).map((doc: string | null, i: number) => ({
     text: doc || '',
     videoId: results.metadatas[0][i].videoId as string,
     videoTitle: results.metadatas[0][i].videoTitle as string,
