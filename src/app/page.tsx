@@ -58,19 +58,21 @@ export default function Home() {
             let data: any = null;
             try {
               data = JSON.parse(line.slice(6));
-              if (data.error) throw new Error(data.error);
-              if (data.step) {
-                setLoadingSteps(prev => [...prev, data.step]);
-              }
-              if (data.done) {
-                setVideos(data.videos);
-                setSessionId(data.sessionId);
-                doneReading = true;
-              }
-            } catch (e: any) {
-              if (e.message !== data?.error) {
-                // JSON parse error on incomplete chunk — skip silently
-              }
+            } catch {
+              // JSON parse error on incomplete chunk — skip silently
+              continue;
+            }
+
+            if (data.error) {
+              throw new Error(data.error);
+            }
+            if (data.step) {
+              setLoadingSteps(prev => [...prev, data.step]);
+            }
+            if (data.done) {
+              setVideos(data.videos);
+              setSessionId(data.sessionId);
+              doneReading = true;
             }
           }
         }
