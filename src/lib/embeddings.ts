@@ -108,8 +108,9 @@ export async function embedAndStore(
   sessionId: string,
   videoId: string,
   videoTitle: string,
-  transcript: string
+  transcript: string | null
 ): Promise<void> {
+  if (!transcript) return; // Skip videos with disabled transcripts
   const chunks = await chunkText(transcript);
 
   // Get or create session

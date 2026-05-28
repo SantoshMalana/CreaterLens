@@ -82,9 +82,15 @@ export default function VideoCard({ video, index }: Props) {
       {/* Footer */}
       <div className="pt-2 mt-auto border-t border-white/5 relative z-10 flex items-center justify-between">
         <div className="flex items-center gap-1.5">
-          <span className="text-white/30 text-xs">📝</span>
-          <span className="text-[11px] font-medium text-white/40">
-            {video.wordCount.toLocaleString()} words transcribed
+          {video.wordCount > 0 ? (
+            <span className="text-white/30 text-xs">📝</span>
+          ) : (
+            <span className="text-red-400/80 text-xs">❌</span>
+          )}
+          <span className={`text-[11px] font-medium ${video.wordCount > 0 ? 'text-white/40' : 'text-red-400/80'}`}>
+            {video.wordCount > 0 
+              ? `${video.wordCount.toLocaleString()} words transcribed`
+              : 'Transcript disabled'}
           </span>
         </div>
       </div>

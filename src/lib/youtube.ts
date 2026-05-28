@@ -46,12 +46,13 @@ export async function fetchVideoMetadata(videoId: string): Promise<Omit<VideoMet
   };
 }
 
-export async function fetchTranscript(videoId: string): Promise<string> {
+export async function fetchTranscript(videoId: string): Promise<string | null> {
   try {
     const transcriptItems = await YoutubeTranscript.fetchTranscript(videoId);
     return transcriptItems.map(item => item.text).join(' ');
-  } catch {
-    return 'Transcript not available for this video.';
+  } catch (err: any) {
+    console.error(`Transcript not available for video ${videoId}:`, err.message);
+    return null;
   }
 }
 
@@ -75,7 +76,7 @@ export async function fetchFullVideoData(url: string): Promise<VideoMetadata> {
     metadata.views
   );
 
-  const wordCount = transcript.split(/\s+/).filter(Boolean).length;
+  const wordCount = transcript ? transcript.split(/\s+/).filter(Boolean).length : 0;
 
   return { ...metadata, transcript, engagementRate, wordCount };
 }

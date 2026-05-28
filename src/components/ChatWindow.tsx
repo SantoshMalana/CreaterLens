@@ -62,7 +62,16 @@ export default function ChatWindow({ sessionId, videos }: Props) {
         body: JSON.stringify({
           message: text,
           sessionId,
-          videoTitles: videos.map(v => v.title),
+          videos: videos.map(v => ({
+            title: v.title,
+            channelName: v.channelName,
+            views: v.views,
+            likes: v.likes,
+            comments: v.comments,
+            engagementRate: v.engagementRate,
+            duration: v.duration,
+            wordCount: v.wordCount,
+          })),
         }),
       });
 

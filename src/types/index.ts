@@ -10,7 +10,7 @@ export interface VideoMetadata {
   publishedAt: string;
   thumbnail: string;
   engagementRate: number;
-  transcript: string;
+  transcript: string | null;
   wordCount: number;
 }
 

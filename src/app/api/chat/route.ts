@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: NextRequest) {
-  const { message, sessionId, videoTitles } = await req.json();
+  const { message, sessionId, videos } = await req.json();
 
   // Get relevant chunks
   const chunks = await retrieveRelevantChunks(sessionId, message, 5);
@@ -22,7 +22,12 @@ export async function POST(req: NextRequest) {
   // Get conversation history
   const history = getHistory(sessionId);
 
+  const statsContext = (videos || [])
+    .map((v: any) => `Video: "${v.title}" by ${v.channelName}\nViews: ${v.views} | Likes: ${v.likes} | Comments: ${v.comments} | Engagement: ${v.engagementRate}% | Duration: ${v.duration} | Transcript Available: ${v.wordCount > 0 ? 'Yes' : 'No'}`)
+    .join('\n\n');
+
   const formattedPrompt = await creatorLensPrompt.format({
+    stats: statsContext,
     context,
     history: history.map(m => `${m.role}: ${m.content}`).join('\n'),
     question: message,
